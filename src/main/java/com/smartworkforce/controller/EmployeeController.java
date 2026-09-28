@@ -4,6 +4,8 @@ package com.smartworkforce.controller;
 import com.smartworkforce.entity.Employee;
 import com.smartworkforce.service.EmployeeService;
 import jakarta.annotation.PostConstruct;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
@@ -21,9 +23,9 @@ public class EmployeeController {
     }
 
     @PostMapping
-    public ResponseEntity<Employee> saveEmployee( @RequestBody Employee employee) {
+    public ResponseEntity<Employee> saveEmployee(@Valid  @RequestBody Employee employee) {
        Employee savedEmployee = employeeService.saveEmployee(employee);
-       return ResponseEntity.ok().body(savedEmployee);
+       return ResponseEntity.status(HttpStatus.CREATED).body(savedEmployee);
     }
 
     @GetMapping
@@ -48,20 +50,15 @@ public class EmployeeController {
             @PathVariable Long id , @RequestBody Employee employee) {
         Employee updatedEmployee = employeeService.updateEmployee(id, employee);
 
-        if(updatedEmployee == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok().body(updatedEmployee);
+        return ResponseEntity.ok(updatedEmployee);
     }
 
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteEmployee(@PathVariable Long id) {
 
-        boolean deleted = employeeService.deleteEmployee(id);
-        if(!deleted) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok().body("Employee deleted Successfully");
+       employeeService.deleteEmployee(id);
+
+        return ResponseEntity.ok("Employee deleted Successfully");
     }
 }

@@ -2,6 +2,7 @@ package com.smartworkforce.service;
 
 
 import com.smartworkforce.entity.Employee;
+import com.smartworkforce.exception.EmployeeNotFoundException;
 import com.smartworkforce.repository.EmployeeRepository;
 import org.springframework.stereotype.Service;
 
@@ -26,15 +27,13 @@ public class EmployeeService {
     }
 
     public Employee getEmployeeById(Long id) {
-        return employeeRepository.findById(id).orElse(null);
+        return employeeRepository.findById(id).orElseThrow(() -> new EmployeeNotFoundException("Employee with id " + id + " not found"));
     }
 
     public Employee  updateEmployee( Long id ,Employee employee) {
 
-        Employee existingEmployee = employeeRepository.findById(id).orElse(null);
-        if (existingEmployee == null) {
-            return null;
-        }
+        Employee existingEmployee = employeeRepository.findById(id).orElseThrow(()-> new EmployeeNotFoundException("Employee with id " + id + " not found"));
+
         existingEmployee.setName(employee.getName());
         existingEmployee.setEmail(employee.getEmail());
         existingEmployee.setDepartment(employee.getDepartment());
@@ -44,10 +43,8 @@ public class EmployeeService {
     }
 
     public boolean deleteEmployee(Long id) {
-        Employee employee = employeeRepository.findById(id).orElse(null);
-        if (employee == null) {
-            return false;
-        }
+        Employee employee = employeeRepository.findById(id).orElseThrow(() -> new EmployeeNotFoundException("Employee with id " + id + " not found"));
+
         employeeRepository.delete(employee);
         return true;
     }
