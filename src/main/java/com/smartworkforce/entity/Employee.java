@@ -17,17 +17,17 @@ public class Employee {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Name is Required")
+  //  @NotBlank(message = "Name is Required")
     private String name;
 
-    @NotBlank(message = "Email is Required")
-    @Email(message = "Email must be valid")
+   // @NotBlank(message = "Email is Required")
+    //@Email(message = "Email must be valid")
     private String email;
 
-    @NotBlank(message = "Department is Required")
+   // @NotBlank(message = "Department is Required")
     private String department;
 
-    @Positive(message = "Salary must be greater than 0")
+    //@Positive(message = "Salary must be greater than 0")
     private double salary;
 
 }

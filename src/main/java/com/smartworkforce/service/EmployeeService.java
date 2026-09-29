@@ -1,6 +1,8 @@
 package com.smartworkforce.service;
 
 
+import com.smartworkforce.dto.EmployeeRequest;
+import com.smartworkforce.dto.EmployeeResponse;
 import com.smartworkforce.entity.Employee;
 import com.smartworkforce.exception.EmployeeNotFoundException;
 import com.smartworkforce.repository.EmployeeRepository;
@@ -22,24 +24,47 @@ public class EmployeeService {
         return employeeRepository.save(employee);
     }
 
-    public List<Employee> getAllEmployees() {
-        return employeeRepository.findAll();
+    public List<EmployeeResponse> getAllEmployeeResponses() {
+
+        List<Employee> employees = employeeRepository.findAll();
+
+        return employees.stream().map(employee -> new EmployeeResponse(employee.getId(),
+                employee.getName(), employee.getEmail(),employee.getDepartment(),employee.getSalary())).toList();
     }
 
-    public Employee getEmployeeById(Long id) {
-        return employeeRepository.findById(id).orElseThrow(() -> new EmployeeNotFoundException("Employee with id " + id + " not found"));
+    public EmployeeResponse getEmployeeResponseById(Long id) {
+     Employee employee= employeeRepository.findById(id).orElseThrow(() -> new EmployeeNotFoundException
+                ("Employee with id " + id + " not found"));
+
+        return new EmployeeResponse(employee.getId(),employee.getName(),employee.getEmail(),
+                employee.getDepartment(),employee.getSalary());
     }
 
-    public Employee  updateEmployee( Long id ,Employee employee) {
+    public EmployeeResponse updateEmployeeResponse(
+            Long id,
+            EmployeeRequest employeeRequest) {
 
-        Employee existingEmployee = employeeRepository.findById(id).orElseThrow(()-> new EmployeeNotFoundException("Employee with id " + id + " not found"));
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() ->
+                        new EmployeeNotFoundException(
+                                "Employee with id " + id + " not found"
+                        )
+                );
 
-        existingEmployee.setName(employee.getName());
-        existingEmployee.setEmail(employee.getEmail());
-        existingEmployee.setDepartment(employee.getDepartment());
-        existingEmployee.setSalary(employee.getSalary());
-         return employeeRepository.save(existingEmployee);
+        employee.setName(employeeRequest.getName());
+        employee.setEmail(employeeRequest.getEmail());
+        employee.setDepartment(employeeRequest.getDepartment());
+        employee.setSalary(employeeRequest.getSalary());
 
+        Employee updatedEmployee = employeeRepository.save(employee);
+
+        return new EmployeeResponse(
+                updatedEmployee.getId(),
+                updatedEmployee.getName(),
+                updatedEmployee.getEmail(),
+                updatedEmployee.getDepartment(),
+                updatedEmployee.getSalary()
+        );
     }
 
     public boolean deleteEmployee(Long id) {

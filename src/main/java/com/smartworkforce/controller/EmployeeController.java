@@ -1,6 +1,8 @@
 package com.smartworkforce.controller;
 
 
+import com.smartworkforce.dto.EmployeeRequest;
+import com.smartworkforce.dto.EmployeeResponse;
 import com.smartworkforce.entity.Employee;
 import com.smartworkforce.service.EmployeeService;
 import jakarta.annotation.PostConstruct;
@@ -23,36 +25,42 @@ public class EmployeeController {
     }
 
     @PostMapping
-    public ResponseEntity<Employee> saveEmployee(@Valid  @RequestBody Employee employee) {
+    public ResponseEntity<Employee> saveEmployee(@Valid  @RequestBody EmployeeRequest employeeRequest) {
+        Employee employee = new Employee();
+        employee.setName(employeeRequest.getName());
+        employee.setDepartment(employeeRequest.getDepartment());
+
+        employee.setEmail(employeeRequest.getEmail());
+        employee.setSalary(employeeRequest.getSalary());
        Employee savedEmployee = employeeService.saveEmployee(employee);
        return ResponseEntity.status(HttpStatus.CREATED).body(savedEmployee);
     }
 
     @GetMapping
-    public ResponseEntity<List<Employee>> getAllEmployees() {
-        List<Employee> employees = employeeService.getAllEmployees();
-        return ResponseEntity.ok().body(employees);
+    public ResponseEntity<List<EmployeeResponse>> getAllEmployees() {
+        List<EmployeeResponse> employees = employeeService.getAllEmployeeResponses();
+        return ResponseEntity.ok(employees);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {
+    public ResponseEntity<EmployeeResponse> getEmployeeById(@PathVariable Long id) {
 
-        Employee employee = employeeService.getEmployeeById(id);
+        EmployeeResponse employeeResponse = employeeService.getEmployeeResponseById(id);
 
-        if(employee == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok().body(employee);
+
+        return ResponseEntity.ok(employeeResponse);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Employee> updateEmployee(
-            @PathVariable Long id , @RequestBody Employee employee) {
-        Employee updatedEmployee = employeeService.updateEmployee(id, employee);
+    public ResponseEntity<EmployeeResponse> updateEmployee(
+            @PathVariable Long id,
+            @Valid @RequestBody EmployeeRequest employeeRequest) {
+
+        EmployeeResponse updatedEmployee =
+                employeeService.updateEmployeeResponse(id, employeeRequest);
 
         return ResponseEntity.ok(updatedEmployee);
     }
-
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteEmployee(@PathVariable Long id) {
